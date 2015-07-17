@@ -1,10 +1,12 @@
 package app.com.example.android.sunshine;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,22 @@ public class MainActivityFragment extends Fragment
 
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        //initializes the adapter.
+        //adapters are the glue that allows us to bind our underlying data to our user interface elements.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<String>(
+                        this.getActivity(), //the app's context
+                        R.layout.list_item_forecast, //the layout that contains a TextView for each string in the array
+                        R.id.list_item_forecast_textview, //the ID of the TextView
+                        weekForecast); //the array of strings
+
+        //inflates layout XML file and turns them into a full hierarchy.
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        //gets a reference to the ListView, and attach the Adapter to it.
+        ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+        listView.setAdapter(adapter);
+
+        return rootView;
     }
 }
