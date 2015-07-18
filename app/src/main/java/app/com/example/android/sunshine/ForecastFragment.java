@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivityFragment extends Fragment
+public class ForecastFragment extends Fragment
 {
-    public MainActivityFragment(){}
+    public ForecastFragment(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,7 +115,7 @@ public class MainActivityFragment extends Fragment
         }
         catch (java.io.IOException e)
         {
-            Log.e("MainActivityFragment", "couldn't connect to the cloud.");
+            Log.e("ForecastFragment", "couldn't connect to the cloud.");
             return null;
         }
         finally
@@ -132,7 +132,7 @@ public class MainActivityFragment extends Fragment
                 }
                 catch (IOException e)
                 {
-                    Log.e("MainActivityFragment", "couldn't close the stream.");
+                    Log.e("ForecastFragment", "couldn't close the stream.");
                 }
             }
         }
