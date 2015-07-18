@@ -2,12 +2,19 @@ package app.com.example.android.sunshine;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,11 +58,13 @@ public class MainActivityFragment extends Fragment
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
         //initializes the adapter.
-        //adapters are the glue that allows us to bind our underlying data to our user interface elements.
+        //adapters are the glue that allows us to bind our underlying data to our user interface
+        //elements.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(
                         this.getActivity(), //the app's context
-                        R.layout.list_item_forecast, //the layout that contains a TextView for each string in the array
+                        R.layout.list_item_forecast, //the layout that contains a TextView for each
+                                                     // string in the array
                         R.id.list_item_forecast_textview, //the ID of the TextView
                         weekForecast); //the array of strings
 
@@ -65,6 +74,68 @@ public class MainActivityFragment extends Fragment
         //gets a reference to the ListView, and attach the Adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(adapter);
+
+
+
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        String forecastJsonString = null;
+
+        try
+        {
+            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=tehran," +
+                    "iran&mode=json&units=metric&cnt=7");
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            InputStream inputStream = urlConnection.getInputStream();
+
+            if(inputStream == null)
+            {
+                return null;
+            }
+
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            StringBuffer buffer = new StringBuffer();
+            String line;
+            while((line = reader.readLine()) != null)
+            {
+                buffer.append(line).append("\n");
+            }
+
+            if(buffer.length() == 0)
+            {
+                return null;
+            }
+
+            forecastJsonString = buffer.toString();
+        }
+        catch (java.io.IOException e)
+        {
+            Log.e("MainActivityFragment", "couldn't connect to the cloud.");
+            return null;
+        }
+        finally
+        {
+            if(urlConnection != null)
+            {
+                urlConnection.disconnect();
+            }
+            if(reader != null)
+            {
+                try
+                {
+                    reader.close();
+                }
+                catch (IOException e)
+                {
+                    Log.e("MainActivityFragment", "couldn't close the stream.");
+                }
+            }
+        }
 
         return rootView;
     }
