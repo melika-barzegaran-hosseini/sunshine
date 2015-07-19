@@ -1,5 +1,6 @@
 package app.com.example.android.sunshine;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -75,68 +76,76 @@ public class ForecastFragment extends Fragment
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(adapter);
 
+        return rootView;
+    }
 
+    public class FetchWeatherTask extends AsyncTask<Void, Void, Void>
+    {
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        String forecastJsonString = null;
-
-        try
+        @Override
+        protected Void doInBackground(Void... params)
         {
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=tehran," +
-                    "iran&mode=json&units=metric&cnt=7");
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            String forecastJsonString = null;
 
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            InputStream inputStream = urlConnection.getInputStream();
-
-            if(inputStream == null)
+            try
             {
+                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=" +
+                        "tehran,iran&mode=json&units=metric&cnt=7");
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+
+                if(inputStream == null)
+                {
+                    return null;
+                }
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                StringBuffer buffer = new StringBuffer();
+                String line;
+                while((line = reader.readLine()) != null)
+                {
+                    buffer.append(line).append("\n");
+                }
+
+                if(buffer.length() == 0)
+                {
+                    return null;
+                }
+
+                forecastJsonString = buffer.toString();
+            }
+            catch (java.io.IOException e)
+            {
+                Log.e(this.LOG_TAG, "couldn't connect to the cloud.");
                 return null;
             }
-
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            StringBuffer buffer = new StringBuffer();
-            String line;
-            while((line = reader.readLine()) != null)
+            finally
             {
-                buffer.append(line).append("\n");
+                if(urlConnection != null)
+                {
+                    urlConnection.disconnect();
+                }
+                if(reader != null)
+                {
+                    try
+                    {
+                        reader.close();
+                    }
+                    catch (IOException e)
+                    {
+                        Log.e(this.LOG_TAG, "couldn't close the stream.");
+                    }
+                }
             }
-
-            if(buffer.length() == 0)
-            {
-                return null;
-            }
-
-            forecastJsonString = buffer.toString();
-        }
-        catch (java.io.IOException e)
-        {
-            Log.e("ForecastFragment", "couldn't connect to the cloud.");
             return null;
         }
-        finally
-        {
-            if(urlConnection != null)
-            {
-                urlConnection.disconnect();
-            }
-            if(reader != null)
-            {
-                try
-                {
-                    reader.close();
-                }
-                catch (IOException e)
-                {
-                    Log.e("ForecastFragment", "couldn't close the stream.");
-                }
-            }
-        }
-
-        return rootView;
     }
 }
