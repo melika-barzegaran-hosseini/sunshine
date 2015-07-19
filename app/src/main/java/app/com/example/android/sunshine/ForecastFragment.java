@@ -22,6 +22,8 @@ import java.util.List;
 
 public class ForecastFragment extends Fragment
 {
+    private ArrayAdapter<String> forecastAdapter;
+
     public ForecastFragment(){}
 
     @Override
@@ -61,7 +63,7 @@ public class ForecastFragment extends Fragment
         //initializes the adapter.
         //adapters are the glue that allows us to bind our underlying data to our user interface
         //elements.
-        ArrayAdapter<String> adapter =
+        this.forecastAdapter =
                 new ArrayAdapter<String>(
                         this.getActivity(), //the app's context
                         R.layout.list_item_forecast, //the layout that contains a TextView for each
@@ -74,7 +76,7 @@ public class ForecastFragment extends Fragment
 
         //gets a reference to the ListView, and attach the Adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(adapter);
+        listView.setAdapter(this.forecastAdapter);
 
         return rootView;
     }
