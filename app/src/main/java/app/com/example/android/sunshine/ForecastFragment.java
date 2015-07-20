@@ -26,9 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 
 public class ForecastFragment extends Fragment
 {
@@ -40,36 +38,6 @@ public class ForecastFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        String[] data =
-                {
-                        "Today - Sunny - 88/63",
-                        "Tomorrow - Foggy - 70/46",
-                        "Weds - Cloudy - 72/63",
-                        "Thurs - Rainy - 64/51",
-                        "Fri - Foggy - 70/46",
-                        "Sat - Sunny - 76/68",
-                        "Today - Sunny - 88/63",
-                        "Tomorrow - Foggy - 70/46",
-                        "Weds - Cloudy - 72/63",
-                        "Thurs - Rainy - 64/51",
-                        "Fri - Foggy - 70/46",
-                        "Sat - Sunny - 76/68",
-                        "Today - Sunny - 88/63",
-                        "Tomorrow - Foggy - 70/46",
-                        "Weds - Cloudy - 72/63",
-                        "Thurs - Rainy - 64/51",
-                        "Fri - Foggy - 70/46",
-                        "Sat - Sunny - 76/68",
-                        "Today - Sunny - 88/63",
-                        "Tomorrow - Foggy - 70/46",
-                        "Weds - Cloudy - 72/63",
-                        "Thurs - Rainy - 64/51",
-                        "Fri - Foggy - 70/46",
-                        "Sat - Sunny - 76/68"
-                };
-
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
-
         //initializes the adapter.
         //adapters are the glue that allows us to bind our underlying data to our user interface
         //elements.
@@ -79,7 +47,7 @@ public class ForecastFragment extends Fragment
                         R.layout.list_item_forecast, //the layout that contains a TextView for each
                                                      // string in the array
                         R.id.list_item_forecast_textview, //the ID of the TextView
-                        weekForecast); //the array of strings
+                        new ArrayList<String>()); //the array of strings
 
         //inflates layout XML file and turns them into a full hierarchy.
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -255,6 +223,19 @@ public class ForecastFragment extends Fragment
             {
                 Log.e(LOG_TAG, "JSON string couldn't get parsed.", e);
                 return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String[] strings)
+        {
+            if(strings != null)
+            {
+                forecastAdapter.clear();
+                for(String string : strings)
+                {
+                    forecastAdapter.add(string);
+                }
             }
         }
     }
