@@ -1,5 +1,6 @@
 package app.com.example.android.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -106,28 +107,51 @@ public class ForecastFragment extends Fragment
         {
             case R.id.action_refresh:
                 FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-                fetchWeatherTask.execute();
+                fetchWeatherTask.execute("tehran,iran");
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchWeatherTask extends AsyncTask<Void, Void, Void>
+    public class FetchWeatherTask extends AsyncTask<String, Void, Void>
     {
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params)
+        protected Void doInBackground(String... params)
         {
+            if (params.length == 0)
+            {
+                return null;
+            }
+
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String forecastJsonString = null;
 
+            String mode = "json";
+            String units = "metric";
+            String days = "7";
+
             try
             {
-                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=" +
-                        "tehran,iran&mode=json&units=metric&cnt=7");
+                final String BASE_URI = "http://api.openweathermap.org/data/2.5/forecast/daily?";
+                final String QUERY_PARAM = "q";
+                final String MODE_PARAM = "mode";
+                final String UNITS_PARAM = "units";
+                final String DAYS_PARAM = "cnt";
+
+                Uri builtUri = Uri.parse(BASE_URI).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(MODE_PARAM, mode)
+                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(DAYS_PARAM, days)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                Log.v(this.LOG_TAG, "URL: " + url.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
