@@ -155,6 +155,7 @@ public class ForecastFragment extends Fragment
                 }
 
                 forecastJsonString = buffer.toString();
+                Log.v(this.LOG_TAG, "forecast-JSON-string: " + forecastJsonString);
             }
             catch (java.io.IOException e)
             {
