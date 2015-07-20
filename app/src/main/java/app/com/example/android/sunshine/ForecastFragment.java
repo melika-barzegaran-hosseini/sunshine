@@ -94,7 +94,7 @@ public class ForecastFragment extends Fragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        inflater.inflate(R.menu.forecast_fragment,menu);
+        inflater.inflate(R.menu.forecast_fragment, menu);
     }
 
     @Override
@@ -105,6 +105,8 @@ public class ForecastFragment extends Fragment
         switch(id)
         {
             case R.id.action_refresh:
+                FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+                fetchWeatherTask.execute();
                 return true;
         }
 
