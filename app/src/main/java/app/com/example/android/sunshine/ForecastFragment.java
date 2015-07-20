@@ -120,7 +120,7 @@ public class ForecastFragment extends Fragment
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, Void>
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
     {
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
@@ -161,7 +161,7 @@ public class ForecastFragment extends Fragment
         }
 
         @Override
-        protected Void doInBackground(String... params)
+        protected String[] doInBackground(String... params)
         {
             if (params.length == 0)
             {
@@ -246,7 +246,16 @@ public class ForecastFragment extends Fragment
                     }
                 }
             }
-            return null;
+
+            try
+            {
+                return this.getInformationFromJson(forecastJsonString);
+            }
+            catch (JSONException e)
+            {
+                Log.e(LOG_TAG, "JSON string couldn't get parsed.", e);
+                return null;
+            }
         }
     }
 }
