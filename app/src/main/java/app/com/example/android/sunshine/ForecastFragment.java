@@ -110,11 +110,6 @@ public class ForecastFragment extends Fragment
                 results[counter] = date + " - " + weather + " - " + max + "/" + min;
             }
 
-            for(String result : results)
-            {
-                Log.v(LOG_TAG, "forecast entry: " + result);
-            }
-
             return results;
         }
 
@@ -161,8 +156,6 @@ public class ForecastFragment extends Fragment
 
                 URL url = new URL(builtUri.toString());
 
-                Log.v(this.LOG_TAG, "URL: " + url.toString());
-
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -189,7 +182,6 @@ public class ForecastFragment extends Fragment
                 }
 
                 forecastJsonString = buffer.toString();
-                Log.v(this.LOG_TAG, "forecast-JSON-string: " + forecastJsonString);
             }
             catch (java.io.IOException e)
             {
