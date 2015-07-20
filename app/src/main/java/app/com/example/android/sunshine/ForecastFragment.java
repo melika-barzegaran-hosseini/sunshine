@@ -14,14 +14,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class ForecastFragment extends Fragment
@@ -118,6 +124,41 @@ public class ForecastFragment extends Fragment
     {
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
+        private String[] getInformationFromJson(String forecastJsonString) throws JSONException
+        {
+            JSONArray jsonArray = new JSONObject(forecastJsonString).getJSONArray("list");
+
+            String[] results = new String[jsonArray.length()];
+            for(int counter = 0; counter < jsonArray.length(); counter++)
+            {
+                JSONObject jsonObject = jsonArray.getJSONObject(counter);
+
+                String date = this.getFormattedDate(counter);
+                long min = Math.round(jsonObject.getJSONObject("temp").getDouble("min"));
+                long max = Math.round(jsonObject.getJSONObject("temp").getDouble("max"));
+                String weather = jsonObject.getJSONArray("weather").getJSONObject(0).getString("main");
+
+                results[counter] = new StringBuffer(date).append(" - ").append(weather).append(" - ").append(max).append("/").append(min).toString();
+            }
+
+            for(String result : results)
+            {
+                Log.v(LOG_TAG, "forecast entry: " + result);
+            }
+
+            return results;
+        }
+
+        private String getFormattedDate(int offset)
+        {
+            final String dateFormat = "EEE, MMM dd";
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, offset);
+
+            return new SimpleDateFormat(dateFormat).format(calendar.getTime());
+        }
+
         @Override
         protected Void doInBackground(String... params)
         {
@@ -128,7 +169,7 @@ public class ForecastFragment extends Fragment
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            String forecastJsonString = null;
+            String forecastJsonString;
 
             String mode = "json";
             String units = "metric";
