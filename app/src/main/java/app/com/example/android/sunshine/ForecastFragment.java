@@ -136,9 +136,10 @@ public class ForecastFragment extends Fragment
                 String date = this.getFormattedDate(counter);
                 long min = Math.round(jsonObject.getJSONObject("temp").getDouble("min"));
                 long max = Math.round(jsonObject.getJSONObject("temp").getDouble("max"));
-                String weather = jsonObject.getJSONArray("weather").getJSONObject(0).getString("main");
+                String weather = jsonObject.getJSONArray("weather").getJSONObject(0)
+                        .getString("main");
 
-                results[counter] = new StringBuffer(date).append(" - ").append(weather).append(" - ").append(max).append("/").append(min).toString();
+                results[counter] = date + " - " + weather + " - " + max + "/" + min;
             }
 
             for(String result : results)
