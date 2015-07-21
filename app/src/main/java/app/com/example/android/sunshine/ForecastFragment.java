@@ -95,19 +95,29 @@ public class ForecastFragment extends Fragment
         switch(id)
         {
             case R.id.action_refresh:
-
-                String currentLocationKey = this.getString(R.string.pref_location_key);
-                String currentLocationDefault = this.getString(R.string.pref_location_default);
-                String currentLocation = PreferenceManager
-                        .getDefaultSharedPreferences(this.getActivity())
-                        .getString(currentLocationKey, currentLocationDefault);
-
-                new FetchWeatherTask().execute(currentLocation);
-
+                this.updateWeather();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        updateWeather();
+    }
+
+    private void updateWeather()
+    {
+        String currentLocationKey = this.getString(R.string.pref_location_key);
+        String currentLocationDefault = this.getString(R.string.pref_location_default);
+        String currentLocation = PreferenceManager
+                .getDefaultSharedPreferences(this.getActivity())
+                .getString(currentLocationKey, currentLocationDefault);
+
+        new FetchWeatherTask().execute(currentLocation);
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
