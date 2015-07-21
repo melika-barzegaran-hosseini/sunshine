@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,8 +95,15 @@ public class ForecastFragment extends Fragment
         switch(id)
         {
             case R.id.action_refresh:
-                FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-                fetchWeatherTask.execute("tehran,iran");
+
+                String currentLocationKey = this.getString(R.string.pref_location_key);
+                String currentLocationDefault = this.getString(R.string.pref_location_default);
+                String currentLocation = PreferenceManager
+                        .getDefaultSharedPreferences(this.getActivity())
+                        .getString(currentLocationKey, currentLocationDefault);
+
+                new FetchWeatherTask().execute(currentLocation);
+
                 return true;
         }
 
