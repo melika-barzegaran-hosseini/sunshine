@@ -9,6 +9,14 @@
 
     <string name="pref_location_key">location</string>
     <string name="pref_location_title">Location</string>
-    <string name="pref_location_summary">tehran, iran</string>
     <string name="pref_location_default">tehran, iran</string>
+
+    <string name="pref_units_key">units</string>
+    <string name="pref_units_title">Temperature Units</string>
+    <string name="pref_units_dialog_title">Pick your units:</string>
+
+    <string name="pref_units_metric">metric</string>
+    <string name="pref_units_imperial">imperial</string>
+    <string name="pref_units_metric_label">Metric</string>
+    <string name="pref_units_imperial_label">Imperial</string>
 </resources>

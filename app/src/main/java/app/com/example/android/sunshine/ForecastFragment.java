@@ -111,13 +111,19 @@ public class ForecastFragment extends Fragment
 
     private void updateWeather()
     {
-        String currentLocationKey = this.getString(R.string.pref_location_key);
-        String currentLocationDefault = this.getString(R.string.pref_location_default);
         String currentLocation = PreferenceManager
                 .getDefaultSharedPreferences(this.getActivity())
-                .getString(currentLocationKey, currentLocationDefault);
+                .getString(
+                        getString(R.string.pref_location_key),
+                        getString(R.string.pref_location_default));
 
-        new FetchWeatherTask().execute(currentLocation);
+        String currentUnits = PreferenceManager
+                .getDefaultSharedPreferences(this.getActivity())
+                .getString(
+                        getString(R.string.pref_units_key),
+                        getString(R.string.pref_units_metric));
+
+        new FetchWeatherTask().execute(currentLocation, currentUnits);
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
@@ -168,7 +174,6 @@ public class ForecastFragment extends Fragment
             String forecastJsonString;
 
             String mode = "json";
-            String units = "metric";
             String days = "7";
 
             try
@@ -182,7 +187,7 @@ public class ForecastFragment extends Fragment
                 Uri builtUri = Uri.parse(BASE_URI).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(MODE_PARAM, mode)
-                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(UNITS_PARAM, params[1])
                         .appendQueryParameter(DAYS_PARAM, days)
                         .build();
 

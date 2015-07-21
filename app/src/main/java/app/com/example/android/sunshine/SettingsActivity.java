@@ -21,6 +21,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         // updated when the preference changes.
         this.bindPreferenceSummaryToValue
                 (this.findPreference(this.getString(R.string.pref_location_key)));
+        this.bindPreferenceSummaryToValue
+                (this.findPreference(this.getString(R.string.pref_units_key)));
     }
 
     private void bindPreferenceSummaryToValue(Preference preference)
