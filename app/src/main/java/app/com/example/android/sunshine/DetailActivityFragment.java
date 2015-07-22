@@ -44,8 +44,6 @@ public class DetailActivityFragment extends Fragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        inflater.inflate(R.menu.menu_detail, menu);
-
         ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat
                 .getActionProvider(menu.findItem(R.id.action_share));
 
