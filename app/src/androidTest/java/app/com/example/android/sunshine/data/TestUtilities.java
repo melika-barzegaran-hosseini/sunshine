@@ -1,10 +1,8 @@
 package app.com.example.android.sunshine.data;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -15,32 +13,37 @@ import java.util.Set;
 
 import app.com.example.android.sunshine.utils.PollingCheck;
 
-/*
-    Students: These are functions and some test data to make it easier to test your database and
-    Content Provider.  Note that you'll want your WeatherContract class to exactly match the one
-    in our solution to use these as-given.
- */
-public class TestUtilities extends AndroidTestCase {
-    static final String TEST_LOCATION = "99705";
+public class TestUtilities extends AndroidTestCase
+{
     static final long TEST_DATE = 1419033600L;  // December 20th, 2014
 
-    static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
-        assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
-        validateCurrentRecord(error, valueCursor, expectedValues);
-        valueCursor.close();
+    static void validateCurrentRecord(String error, Cursor cursor, ContentValues expectedValues)
+    {
+        Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
+
+        for(Map.Entry<String, Object> entry : valueSet)
+        {
+            String expectedColumnName = entry.getKey();
+            int index = cursor.getColumnIndex(expectedColumnName);
+            assertFalse("Column '" + expectedColumnName + "' not found. ERROR: " + error
+                    , index == -1);
+
+            String expectedValue = entry.getValue().toString();
+            String value = cursor.getString(index);
+            assertEquals("Value '" + value + "' did not match the expected value '"
+                    + expectedValue + "'. ERROR: " + error, expectedValue, value);
+        }
     }
 
-    static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
-        Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
-        for (Map.Entry<String, Object> entry : valueSet) {
-            String columnName = entry.getKey();
-            int idx = valueCursor.getColumnIndex(columnName);
-            assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
-            String expectedValue = entry.getValue().toString();
-            assertEquals("Value '" + entry.getValue().toString() +
-                    "' did not match the expected value '" +
-                    expectedValue + "'. " + error, expectedValue, valueCursor.getString(idx));
-        }
+    static ContentValues createNorthPoleLocationValues()
+    {
+        ContentValues values = new ContentValues();
+        values.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, "99705");
+        values.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
+        values.put(WeatherContract.LocationEntry.COLUMN_COORD_LATITUDE, 64.7488);
+        values.put(WeatherContract.LocationEntry.COLUMN_COORD_LONGITUDE, -147.353);
+
+        return values;
     }
 
     /*
@@ -60,40 +63,6 @@ public class TestUtilities extends AndroidTestCase {
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
 
         return weatherValues;
-    }
-
-    /*
-        Students: You can uncomment this helper function once you have finished creating the
-        LocationEntry part of the WeatherContract.
-     */
-    static ContentValues createNorthPoleLocationValues() {
-        // Create a new map of values, where column names are the keys
-        ContentValues testValues = new ContentValues();
-        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
-        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
-        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LATITUDE, 64.7488);
-        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONGITUDE, -147.353);
-
-        return testValues;
-    }
-
-    /*
-        Students: You can uncomment this function once you have finished creating the
-        LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
-     */
-    static long insertNorthPoleLocationValues(Context context) {
-        // insert our test records into the database
-        WeatherDbHelper dbHelper = new WeatherDbHelper(context);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-
-        long locationRowId;
-        locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, testValues);
-
-        // Verify we got a row back.
-        assertTrue("Error: Failure to insert North Pole Location Values", locationRowId != -1);
-
-        return locationRowId;
     }
 
     /*
