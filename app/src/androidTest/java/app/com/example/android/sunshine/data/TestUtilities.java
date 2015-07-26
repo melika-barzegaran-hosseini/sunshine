@@ -15,8 +15,6 @@ import app.com.example.android.sunshine.utils.PollingCheck;
 
 public class TestUtilities extends AndroidTestCase
 {
-    static final long TEST_DATE = 1419033600L;  // December 20th, 2014
-
     static void validateCurrentRecord(String error, Cursor cursor, ContentValues expectedValues)
     {
         Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
@@ -46,33 +44,27 @@ public class TestUtilities extends AndroidTestCase
         return values;
     }
 
-    /*
-        Students: Use this to create some default weather values for your database tests.
-     */
-    static ContentValues createWeatherValues(long locationRowId) {
-        ContentValues weatherValues = new ContentValues();
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOCATION_KEY, locationRowId);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, TEST_DATE);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_DIRECTION, 1.1);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE, 75);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE, 65);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DESCRIPTION, "Asteroids");
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
+    static ContentValues createWeatherValues(long locationRowId)
+    {
+        ContentValues values = new ContentValues();
 
-        return weatherValues;
+        values.put(WeatherContract.WeatherEntry.COLUMN_LOCATION_KEY, locationRowId);
+
+        values.put(WeatherContract.WeatherEntry.COLUMN_DATE, "SUN, JUL 26");
+        values.put(WeatherContract.WeatherEntry.COLUMN_DESCRIPTION, "Asteroids");
+        values.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
+
+        values.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE, 65);
+        values.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE, 75);
+
+        values.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
+        values.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
+        values.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5);
+        values.put(WeatherContract.WeatherEntry.COLUMN_WIND_DIRECTION, 1.1);
+
+        return values;
     }
 
-    /*
-        Students: The functions we provide inside of TestProvider use this utility class to test
-        the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
-        CTS tests.
-
-        Note that this only tests that the onChange function is called; it does not test that the
-        correct Uri is returned.
-     */
     static class TestContentObserver extends ContentObserver {
         final HandlerThread mHT;
         boolean mContentChanged;
