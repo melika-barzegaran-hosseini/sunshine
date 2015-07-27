@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package app.com.example.android.sunshine.data;
 
 import android.annotation.TargetApi;
@@ -24,49 +9,63 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-public class WeatherProvider extends ContentProvider {
-
-    // The URI Matcher used by this content provider.
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
-    private WeatherDbHelper mOpenHelper;
+public class WeatherProvider extends ContentProvider
+{
+    private static final UriMatcher uriMatcher = buildUriMatcher();
+    private WeatherDbHelper openHelper;
 
     static final int WEATHER = 100;
     static final int WEATHER_WITH_LOCATION = 101;
     static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
     static final int LOCATION = 300;
 
-    private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
+    private static final SQLiteQueryBuilder weatherByLocationSettingQueryBuilder;
+    static
+    {
+        weatherByLocationSettingQueryBuilder = new SQLiteQueryBuilder();
 
-    static{
-        sWeatherByLocationSettingQueryBuilder = new SQLiteQueryBuilder();
-        
-        //This is an inner join which looks like
         //weather INNER JOIN location ON weather.location_id = location._id
-        sWeatherByLocationSettingQueryBuilder.setTables(
+        weatherByLocationSettingQueryBuilder.setTables(
                 WeatherContract.WeatherEntry.TABLE_NAME + " INNER JOIN " +
-                        WeatherContract.LocationEntry.TABLE_NAME +
-                        " ON " + WeatherContract.WeatherEntry.TABLE_NAME +
-                        "." + WeatherContract.WeatherEntry.COLUMN_LOCATION_KEY +
-                        " = " + WeatherContract.LocationEntry.TABLE_NAME +
-                        "." + WeatherContract.LocationEntry._ID);
+                        WeatherContract.LocationEntry.TABLE_NAME + " ON " +
+                        WeatherContract.WeatherEntry.TABLE_NAME + "." +
+                        WeatherContract.WeatherEntry.COLUMN_LOCATION_KEY + " = " +
+                        WeatherContract.LocationEntry.TABLE_NAME + "." +
+                        WeatherContract.LocationEntry._ID);
     }
 
     //location.location_setting = ?
-    private static final String sLocationSettingSelection =
-            WeatherContract.LocationEntry.TABLE_NAME+
+    private static final String locationSettingSelection =
+            WeatherContract.LocationEntry.TABLE_NAME +
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
 
     //location.location_setting = ? AND date >= ?
-    private static final String sLocationSettingWithStartDateSelection =
-            WeatherContract.LocationEntry.TABLE_NAME+
+    private static final String locationSettingWithStartDateSelection =
+            WeatherContract.LocationEntry.TABLE_NAME +
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
                     WeatherContract.WeatherEntry.COLUMN_DATE + " >= ? ";
 
     //location.location_setting = ? AND date = ?
-    private static final String sLocationSettingAndDaySelection =
+    private static final String locationSettingAndDaySelection =
             WeatherContract.LocationEntry.TABLE_NAME +
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
                     WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ";
+
+    static UriMatcher buildUriMatcher()
+    {
+        UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+        matcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER
+                , WEATHER);
+        matcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER
+                + "/*", WEATHER_WITH_LOCATION);
+        matcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER
+                + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
+        matcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_LOCATION,
+                LOCATION);
+
+        return  matcher;
+    }
 
     private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
         String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
@@ -76,14 +75,14 @@ public class WeatherProvider extends ContentProvider {
         String selection;
 
         if (startDate == 0) {
-            selection = sLocationSettingSelection;
+            selection = locationSettingSelection;
             selectionArgs = new String[]{locationSetting};
         } else {
             selectionArgs = new String[]{locationSetting, Long.toString(startDate)};
-            selection = sLocationSettingWithStartDateSelection;
+            selection = locationSettingWithStartDateSelection;
         }
 
-        return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+        return weatherByLocationSettingQueryBuilder.query(openHelper.getReadableDatabase(),
                 projection,
                 selection,
                 selectionArgs,
@@ -98,9 +97,9 @@ public class WeatherProvider extends ContentProvider {
         String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
         long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
 
-        return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+        return weatherByLocationSettingQueryBuilder.query(openHelper.getReadableDatabase(),
                 projection,
-                sLocationSettingAndDaySelection,
+                locationSettingAndDaySelection,
                 new String[]{locationSetting, Long.toString(date)},
                 null,
                 null,
@@ -108,32 +107,10 @@ public class WeatherProvider extends ContentProvider {
         );
     }
 
-    /*
-        Students: Here is where you need to create the UriMatcher. This UriMatcher will
-        match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
-        and LOCATION integer constants defined above.  You can test this by uncommenting the
-        testUriMatcher test within TestUriMatcher.
-     */
-    static UriMatcher buildUriMatcher() {
-        // 1) The code passed into the constructor represents the code to return for the root
-        // URI.  It's common to use NO_MATCH as the code for this case. Add the constructor below.
-
-
-        // 2) Use the addURI function to match each of the types.  Use the constants from
-        // WeatherContract to help define the types to the UriMatcher.
-
-
-        // 3) Return the new matcher!
-        return null;
-    }
-
-    /*
-        Students: We've coded this for you.  We just create a new WeatherDbHelper for later use
-        here.
-     */
     @Override
-    public boolean onCreate() {
-        mOpenHelper = new WeatherDbHelper(getContext());
+    public boolean onCreate()
+    {
+        openHelper = new WeatherDbHelper(getContext());
         return true;
     }
 
@@ -146,7 +123,7 @@ public class WeatherProvider extends ContentProvider {
     public String getType(Uri uri) {
 
         // Use the Uri Matcher to determine what kind of URI this is.
-        final int match = sUriMatcher.match(uri);
+        final int match = uriMatcher.match(uri);
 
         switch (match) {
             // Student: Uncomment and fill out these two cases
@@ -167,7 +144,7 @@ public class WeatherProvider extends ContentProvider {
         // Here's the switch statement that, given a URI, will determine what kind of request it is,
         // and query the database accordingly.
         Cursor retCursor;
-        switch (sUriMatcher.match(uri)) {
+        switch (uriMatcher.match(uri)) {
             // "weather/*/*"
             case WEATHER_WITH_LOCATION_AND_DATE:
             {
@@ -202,8 +179,8 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        final int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = openHelper.getWritableDatabase();
+        final int match = uriMatcher.match(uri);
         Uri returnUri;
 
         switch (match) {
@@ -243,7 +220,8 @@ public class WeatherProvider extends ContentProvider {
         // normalize the date value
         if (values.containsKey(WeatherContract.WeatherEntry.COLUMN_DATE)) {
             long dateValue = values.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
-            values.put(WeatherContract.WeatherEntry.COLUMN_DATE, WeatherContract.normalizeDate(dateValue));
+            values.put(WeatherContract.WeatherEntry.COLUMN_DATE,
+                    dateValue /*WeatherContract.normalizeDate(dateValue)*/);
         }
     }
 
@@ -257,8 +235,8 @@ public class WeatherProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        final int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = openHelper.getWritableDatabase();
+        final int match = uriMatcher.match(uri);
         switch (match) {
             case WEATHER:
                 db.beginTransaction();
@@ -288,7 +266,7 @@ public class WeatherProvider extends ContentProvider {
     @Override
     @TargetApi(11)
     public void shutdown() {
-        mOpenHelper.close();
+        openHelper.close();
         super.shutdown();
     }
 }
