@@ -10,6 +10,10 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
+        <provider
+            android:authorities="app.com.example.android.sunshine"
+            android:name="app.com.example.android.sunshine.data.WeatherProvider"/>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
