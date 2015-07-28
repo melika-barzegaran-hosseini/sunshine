@@ -114,25 +114,24 @@ public class WeatherProvider extends ContentProvider
         return true;
     }
 
-    /*
-        Students: Here's where you'll code the getType function that uses the UriMatcher.  You can
-        test this by uncommenting testGetType in TestProvider.
-
-     */
     @Override
-    public String getType(Uri uri) {
-
-        // Use the Uri Matcher to determine what kind of URI this is.
+    public String getType(Uri uri)
+    {
         final int match = uriMatcher.match(uri);
+        switch (match)
+        {
+            case WEATHER_WITH_LOCATION_AND_DATE:
+                return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
 
-        switch (match) {
-            // Student: Uncomment and fill out these two cases
-//            case WEATHER_WITH_LOCATION_AND_DATE:
-//            case WEATHER_WITH_LOCATION:
+            case WEATHER_WITH_LOCATION:
+                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+
             case WEATHER:
                 return WeatherContract.WeatherEntry.CONTENT_TYPE;
+
             case LOCATION:
                 return WeatherContract.LocationEntry.CONTENT_TYPE;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
