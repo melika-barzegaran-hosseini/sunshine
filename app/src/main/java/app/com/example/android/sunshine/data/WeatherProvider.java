@@ -211,29 +211,50 @@ public class WeatherProvider extends ContentProvider
         return retCursor;
     }
 
-    /*
-        Student: Add the ability to insert Locations to the implementation of this function.
-     */
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = openHelper.getWritableDatabase();
-        final int match = uriMatcher.match(uri);
-        Uri returnUri;
+    public Uri insert(Uri uri, ContentValues values)
+    {
+        final SQLiteDatabase database = openHelper.getWritableDatabase();
 
-        switch (match) {
-            case WEATHER: {
-                normalizeDate(values);
-                long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+        Uri returnUri;
+        switch (uriMatcher.match(uri))
+        {
+            case WEATHER:
+            {
+                long _id = database.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, values);
+
+                if (_id > 0)
+                {
                     returnUri = WeatherContract.WeatherEntry.buildWeatherUri(_id);
+                }
                 else
+                {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
                 break;
             }
+
+            case LOCATION:
+            {
+                long _id = database.insert(WeatherContract.LocationEntry.TABLE_NAME, null, values);
+
+                if(_id > 0)
+                {
+                    returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
+                }
+                else
+                {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+
+        this.getContext().getContentResolver().notifyChange(uri, null);
+
         return returnUri;
     }
 
@@ -251,15 +272,6 @@ public class WeatherProvider extends ContentProvider
 
         // Student: return the actual rows deleted
         return 0;
-    }
-
-    private void normalizeDate(ContentValues values) {
-        // normalize the date value
-        if (values.containsKey(WeatherContract.WeatherEntry.COLUMN_DATE)) {
-            long dateValue = values.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
-            values.put(WeatherContract.WeatherEntry.COLUMN_DATE,
-                    dateValue /*WeatherContract.normalizeDate(dateValue)*/);
-        }
     }
 
     @Override
@@ -280,7 +292,7 @@ public class WeatherProvider extends ContentProvider
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        normalizeDate(value);
+                        //normalizeDate(value);
                         long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;

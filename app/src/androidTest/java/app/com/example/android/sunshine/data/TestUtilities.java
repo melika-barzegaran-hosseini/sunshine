@@ -17,6 +17,9 @@ import app.com.example.android.sunshine.utils.PollingCheck;
 
 public class TestUtilities extends AndroidTestCase
 {
+    static final String TEST_LOCATION = "99705";
+    static final long TEST_DATE = 1419033600L; // December 20th, 2014
+
     static void validateCursor(String error, Cursor cursor, ContentValues expectedValues)
     {
         assertTrue("Empty cursor returned. ERROR: " + error, cursor.moveToFirst());
@@ -45,7 +48,7 @@ public class TestUtilities extends AndroidTestCase
     static ContentValues createNorthPoleLocationValues()
     {
         ContentValues values = new ContentValues();
-        values.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, "99705");
+        values.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
         values.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
         values.put(WeatherContract.LocationEntry.COLUMN_COORD_LATITUDE, 64.7488);
         values.put(WeatherContract.LocationEntry.COLUMN_COORD_LONGITUDE, -147.353);
@@ -72,7 +75,7 @@ public class TestUtilities extends AndroidTestCase
 
         values.put(WeatherContract.WeatherEntry.COLUMN_LOCATION_KEY, locationRowId);
 
-        values.put(WeatherContract.WeatherEntry.COLUMN_DATE, "SUN, JUL 26");
+        values.put(WeatherContract.WeatherEntry.COLUMN_DATE, TEST_DATE);
         values.put(WeatherContract.WeatherEntry.COLUMN_DESCRIPTION, "Asteroids");
         values.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
 
@@ -98,49 +101,53 @@ public class TestUtilities extends AndroidTestCase
         assertTrue("ERROR: Failure to insert weather entry values", weatherRowId != -1);
     }
 
+    static class TestContentObserver extends ContentObserver
+    {
+        final HandlerThread handlerThread;
+        boolean contentChanged;
 
-    static class TestContentObserver extends ContentObserver {
-        final HandlerThread mHT;
-        boolean mContentChanged;
-
-        static TestContentObserver getTestContentObserver() {
-            HandlerThread ht = new HandlerThread("ContentObserverThread");
-            ht.start();
-            return new TestContentObserver(ht);
+        private TestContentObserver(HandlerThread handlerThread)
+        {
+            super(new Handler(handlerThread.getLooper()));
+            this.handlerThread = handlerThread;
         }
 
-        private TestContentObserver(HandlerThread ht) {
-            super(new Handler(ht.getLooper()));
-            mHT = ht;
+        static TestContentObserver getTestContentObserver()
+        {
+            HandlerThread handlerThread = new HandlerThread("ContentObserverThread");
+            handlerThread.start();
+            return new TestContentObserver(handlerThread);
         }
 
         // On earlier versions of Android, this onChange method is called
         @Override
-        public void onChange(boolean selfChange) {
+        public void onChange(boolean selfChange)
+        {
             onChange(selfChange, null);
         }
 
         @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            mContentChanged = true;
+        public void onChange(boolean selfChange, Uri uri)
+        {
+            contentChanged = true;
         }
 
-        public void waitForNotificationOrFail() {
-            // Note: The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
-            // It's useful to look at the Android CTS source for ideas on how to test your Android
-            // applications.  The reason that PollingCheck works is that, by default, the JUnit
-            // testing framework is not running on the main Android application thread.
-            new PollingCheck(5000) {
+        public void waitForNotificationOrFail()
+        {
+            new PollingCheck(5000)
+            {
                 @Override
-                protected boolean check() {
-                    return mContentChanged;
+                protected boolean check()
+                {
+                    return contentChanged;
                 }
             }.run();
-            mHT.quit();
+            this.handlerThread.quit();
         }
     }
 
-    static TestContentObserver getTestContentObserver() {
+    static TestContentObserver getTestContentObserver()
+    {
         return TestContentObserver.getTestContentObserver();
     }
 }
