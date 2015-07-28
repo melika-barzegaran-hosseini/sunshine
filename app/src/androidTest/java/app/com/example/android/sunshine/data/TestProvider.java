@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.test.AndroidTestCase;
 
 import app.com.example.android.sunshine.data.WeatherContract.LocationEntry;
@@ -145,72 +146,46 @@ public class TestProvider extends AndroidTestCase
                         "LocationEntry.CONTENT_TYPE", LocationEntry.CONTENT_TYPE, type);
     }
 
-    /*
-        This test uses the database directly to insert and then uses the ContentProvider to
-        read out the data.  Uncomment this test to see if the basic weather query functionality
-        given in the ContentProvider is working correctly.
-     */
-//    public void testBasicWeatherQuery() {
-//        // insert our test records into the database
-//        WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-//        long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
-//
-//        // Fantastic.  Now that we have a location, add some weather!
-//        ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
-//
-//        long weatherRowId = db.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
-//        assertTrue("Unable to Insert WeatherEntry into the Database", weatherRowId != -1);
-//
-//        db.close();
-//
-//        // Test the basic content provider query
-//        Cursor weatherCursor = mContext.getContentResolver().query(
-//                WeatherEntry.CONTENT_URI,
-//                null,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        // Make sure we get the correct cursor out of the database
-//        TestUtilities.validateCursor("testBasicWeatherQuery", weatherCursor, weatherValues);
-//    }
+    public void testBasicWeatherQuery()
+    {
+        ContentValues locationValues = TestUtilities.createNorthPoleLocationValues();
+        long locationRowId = TestUtilities.insertNorthPoleLocationValues(this.getContext());
 
-    /*
-        This test uses the database directly to insert and then uses the ContentProvider to
-        read out the data.  Uncomment this test to see if your location queries are
-        performing correctly.
-     */
-//    public void testBasicLocationQueries() {
-//        // insert our test records into the database
-//        WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-//        long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
-//
-//        // Test the basic content provider query
-//        Cursor locationCursor = mContext.getContentResolver().query(
-//                LocationEntry.CONTENT_URI,
-//                null,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        // Make sure we get the correct cursor out of the database
-//        TestUtilities.validateCursor("testBasicLocationQueries, location query", locationCursor, testValues);
-//
-//        // Has the NotificationUri been set correctly? --- we can only test this easily against API
-//        // level 19 or greater because getNotificationUri was added in API level 19.
-//        if ( Build.VERSION.SDK_INT >= 19 ) {
-//            assertEquals("Error: Location Query did not properly set NotificationUri",
-//                    locationCursor.getNotificationUri(), LocationEntry.CONTENT_URI);
-//        }
-//    }
+        ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
+        TestUtilities.insertWeatherValues(this.getContext(), locationRowId);
+
+        Cursor weatherCursor = this.getContext().getContentResolver().query(
+                WeatherEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        TestUtilities.validateCursor("testBasicWeatherQuery", weatherCursor, weatherValues);
+    }
+
+    public void testBasicLocationQueries()
+    {
+        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        long locationRowId = TestUtilities.insertNorthPoleLocationValues(this.getContext());
+
+        Cursor locationCursor = this.getContext().getContentResolver().query(
+                LocationEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        TestUtilities.validateCursor("testBasicLocationQueries", locationCursor, testValues);
+
+        if(Build.VERSION.SDK_INT >= 19)
+        {
+            assertEquals("ERROR: Location Query did not properly set NotificationUri",
+                    locationCursor.getNotificationUri(), LocationEntry.CONTENT_URI);
+        }
+    }
 
     /*
         This test uses the provider to insert and then update the data. Uncomment this test to

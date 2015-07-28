@@ -1,8 +1,10 @@
 package app.com.example.android.sunshine.data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -15,6 +17,13 @@ import app.com.example.android.sunshine.utils.PollingCheck;
 
 public class TestUtilities extends AndroidTestCase
 {
+    static void validateCursor(String error, Cursor cursor, ContentValues expectedValues)
+    {
+        assertTrue("Empty cursor returned. ERROR: " + error, cursor.moveToFirst());
+        validateCurrentRecord(error, cursor, expectedValues);
+        cursor.close();
+    }
+
     static void validateCurrentRecord(String error, Cursor cursor, ContentValues expectedValues)
     {
         Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
@@ -44,6 +53,19 @@ public class TestUtilities extends AndroidTestCase
         return values;
     }
 
+    static long insertNorthPoleLocationValues(Context context)
+    {
+        SQLiteDatabase database = new WeatherDbHelper(context).getWritableDatabase();
+        ContentValues values = TestUtilities.createNorthPoleLocationValues();
+
+        long locationRowId = database.insert(WeatherContract.LocationEntry.TABLE_NAME,
+                null, values);
+
+        assertTrue("Error: Failure to insert location entry values", locationRowId != -1);
+
+        return locationRowId;
+    }
+
     static ContentValues createWeatherValues(long locationRowId)
     {
         ContentValues values = new ContentValues();
@@ -64,6 +86,18 @@ public class TestUtilities extends AndroidTestCase
 
         return values;
     }
+
+    static void insertWeatherValues(Context context, long locationRowId)
+    {
+        SQLiteDatabase database = new WeatherDbHelper(context).getWritableDatabase();
+        ContentValues values = TestUtilities.createWeatherValues(locationRowId);
+
+        long weatherRowId = database.insert(WeatherContract.WeatherEntry.TABLE_NAME,
+                null, values);
+
+        assertTrue("ERROR: Failure to insert weather entry values", weatherRowId != -1);
+    }
+
 
     static class TestContentObserver extends ContentObserver {
         final HandlerThread mHT;

@@ -67,19 +67,23 @@ public class WeatherProvider extends ContentProvider
         return  matcher;
     }
 
-    private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder)
+    {
         String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
         long startDate = WeatherContract.WeatherEntry.getStartDateFromUri(uri);
 
         String[] selectionArgs;
         String selection;
 
-        if (startDate == 0) {
+        if (startDate == 0)
+        {
             selection = locationSettingSelection;
             selectionArgs = new String[]{locationSetting};
-        } else {
-            selectionArgs = new String[]{locationSetting, Long.toString(startDate)};
+        }
+        else
+        {
             selection = locationSettingWithStartDateSelection;
+            selectionArgs = new String[]{locationSetting, Long.toString(startDate)};
         }
 
         return weatherByLocationSettingQueryBuilder.query(openHelper.getReadableDatabase(),
@@ -92,8 +96,9 @@ public class WeatherProvider extends ContentProvider
         );
     }
 
-    private Cursor getWeatherByLocationSettingAndDate(
-            Uri uri, String[] projection, String sortOrder) {
+    private Cursor getWeatherByLocationSettingAndDate
+            (Uri uri, String[] projection, String sortOrder)
+    {
         String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
         long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
 
@@ -101,6 +106,34 @@ public class WeatherProvider extends ContentProvider
                 projection,
                 locationSettingAndDaySelection,
                 new String[]{locationSetting, Long.toString(date)},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getWeather
+            (String[] projection, String selection, String[] selectionArgs, String sortOrder)
+    {
+        return this.openHelper.getReadableDatabase().query(
+                WeatherContract.WeatherEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getLocation
+            (String[] projection, String selection, String[] selectionArgs, String sortOrder)
+    {
+        return this.openHelper.getReadableDatabase().query(
+                WeatherContract.LocationEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
                 null,
                 null,
                 sortOrder
@@ -139,37 +172,42 @@ public class WeatherProvider extends ContentProvider
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-                        String sortOrder) {
-        // Here's the switch statement that, given a URI, will determine what kind of request it is,
-        // and query the database accordingly.
+             String sortOrder)
+    {
         Cursor retCursor;
-        switch (uriMatcher.match(uri)) {
-            // "weather/*/*"
+
+        switch (uriMatcher.match(uri))
+        {
             case WEATHER_WITH_LOCATION_AND_DATE:
             {
                 retCursor = getWeatherByLocationSettingAndDate(uri, projection, sortOrder);
                 break;
             }
-            // "weather/*"
-            case WEATHER_WITH_LOCATION: {
+
+            case WEATHER_WITH_LOCATION:
+            {
                 retCursor = getWeatherByLocationSetting(uri, projection, sortOrder);
                 break;
             }
-            // "weather"
-            case WEATHER: {
-                retCursor = null;
+
+            case WEATHER:
+            {
+                retCursor = getWeather(projection, selection, selectionArgs, sortOrder);
                 break;
             }
-            // "location"
-            case LOCATION: {
-                retCursor = null;
+
+            case LOCATION:
+            {
+                retCursor = getLocation(projection, selection, selectionArgs, sortOrder);
                 break;
             }
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return retCursor;
     }
 
