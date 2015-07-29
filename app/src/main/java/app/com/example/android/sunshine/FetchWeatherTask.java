@@ -4,11 +4,9 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,31 +18,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Vector;
 
 import app.com.example.android.sunshine.data.WeatherContract;
 import app.com.example.android.sunshine.data.WeatherContract.WeatherEntry;
 
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
+public class FetchWeatherTask extends AsyncTask<String, Void, Void>
 {
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
     private final Context context;
-    private ArrayAdapter<String> forecastAdapter;
 
     private boolean DEBUG = true;
 
-    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter)
+    public FetchWeatherTask(Context context)
     {
         this.context = context;
-        this.forecastAdapter = forecastAdapter;
     }
 
     @Override
-    protected String[] doInBackground(String... params)
+    protected Void doInBackground(String... params)
     {
         if (params.length == 0)
         {
@@ -53,7 +47,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-        String forecastJsonString = null;
+        String forecastJsonString;
 
         String format = "json";
         String units = "metric";
@@ -104,11 +98,17 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
             }
 
             forecastJsonString = buffer.toString();
+            getInformationFromJson(forecastJsonString, locationQuery);
         }
         catch (IOException e)
         {
             Log.e(this.LOG_TAG, "couldn't connect to the cloud.");
             return null;
+        }
+        catch (JSONException e)
+        {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         }
         finally
         {
@@ -129,19 +129,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
             }
         }
 
-        try
-        {
-            return getInformationFromJson(forecastJsonString, locationQuery);
-        }
-        catch (JSONException e)
-        {
-            Log.e(LOG_TAG, "JSON string couldn't get parsed.", e);
-        }
-
         return null;
     }
 
-    private String[] getInformationFromJson(String forecastJsonString, String locationSetting)
+    private void getInformationFromJson(String forecastJsonString, String locationSetting)
             throws JSONException
     {
         final String OWM_CITY = "city";
@@ -181,8 +172,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
             Vector<ContentValues> contentValuesVector
                     = new Vector<ContentValues>(weatherArray.length());
 
-            long firstDayInMilliseconds = 0L;
-
             for(int counter = 0; counter < weatherArray.length(); counter++)
             {
                 long dateTime;
@@ -201,11 +190,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, counter);
                 dateTime = calendar.getTimeInMillis();
-
-                if(counter == 0)
-                {
-                    firstDayInMilliseconds = dateTime;
-                }
 
                 JSONObject dayForecast = weatherArray.getJSONObject(counter);
 
@@ -238,6 +222,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
                 contentValuesVector.add(weatherValues);
             }
 
+            int inserted;
             if (contentValuesVector.size() > 0)
             {
                 ContentValues[] contentValuesArray = new ContentValues[contentValuesVector.size()];
@@ -245,55 +230,19 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
 
                 context.getContentResolver().delete(WeatherEntry.CONTENT_URI, null, null);
 
-                context.getContentResolver().bulkInsert(
+                inserted = context.getContentResolver().bulkInsert(
                         WeatherEntry.CONTENT_URI,
                         contentValuesArray
                 );
+
+                Log.d(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
             }
-
-            String sortOrder = WeatherEntry.COLUMN_DATE + " ASC";
-            Uri weatherForLocationUri =
-                    WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-                            locationSetting,
-                            firstDayInMilliseconds
-                    );
-
-            Cursor cursor = context.getContentResolver().query(
-                    weatherForLocationUri,
-                    null,
-                    null,
-                    null,
-                    sortOrder
-            );
-
-            contentValuesVector = new Vector<ContentValues>(cursor.getCount());
-
-            if (cursor.moveToFirst())
-            {
-                do
-                {
-                    ContentValues contentValues = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
-                    contentValuesVector.add(contentValues);
-                }
-                while(cursor.moveToNext());
-            }
-
-            Log.d(LOG_TAG,
-                    "FetchWeatherTask Complete. " + contentValuesVector.size() + "Inserted");
-
-            String[] resultStrings = convertContentValuesToUXFormat(contentValuesVector);
-
-            return resultStrings;
-
         }
         catch (JSONException e)
         {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-
-        return null;
     }
 
     /**
@@ -342,45 +291,5 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
         cursor.close();
 
         return locationId;
-    }
-
-    String[] convertContentValuesToUXFormat(Vector<ContentValues> vector)
-    {
-        String[] resultStrings = new String[vector.size()];
-
-        for(int counter = 0; counter < vector.size(); counter++)
-        {
-            ContentValues weatherValues = vector.elementAt(counter);
-
-            double max = weatherValues.getAsDouble(WeatherEntry.COLUMN_MAX_TEMPERATURE);
-            double min = weatherValues.getAsDouble(WeatherEntry.COLUMN_MIN_TEMPERATURE);
-
-            resultStrings[counter] =
-                    getReadableDateString(weatherValues.getAsLong(WeatherEntry.COLUMN_DATE)) +
-                            " - " + weatherValues.getAsString(WeatherEntry.COLUMN_DESCRIPTION) +
-                            " - " + Math.round(max) + "/" + Math.round(min);
-        }
-        return resultStrings;
-    }
-
-    private String getReadableDateString(long time)
-    {
-        final String dateFormat = "EEE, MMM dd";
-        Date date = new Date(time);
-        return new SimpleDateFormat(dateFormat).format(date);
-    }
-
-    @Override
-    protected void onPostExecute(String[] strings)
-    {
-        if (strings != null && forecastAdapter != null)
-        {
-            forecastAdapter.clear();
-
-            for(String string : strings)
-            {
-                forecastAdapter.add(string);
-            }
-        }
     }
 }

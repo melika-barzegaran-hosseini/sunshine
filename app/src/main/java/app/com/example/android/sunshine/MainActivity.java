@@ -3,7 +3,6 @@ package app.com.example.android.sunshine;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +18,6 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -49,14 +47,10 @@ public class MainActivity extends ActionBarActivity
 
     private void openPreferredLocationInMap()
     {
-        String currentLocation = PreferenceManager
-                .getDefaultSharedPreferences(this)
-                .getString(
-                        getString(R.string.pref_location_key),
-                        getString(R.string.pref_location_default));
+        String location = Utility.getPreferredLocation(this);
 
         Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", currentLocation)
+                .appendQueryParameter("q", location)
                 .build();
 
         Intent intent = new Intent(Intent.ACTION_VIEW).setData(geoLocation);
@@ -66,7 +60,7 @@ public class MainActivity extends ActionBarActivity
         }
         else
         {
-            Log.d(LOG_TAG, "Couldn't call " + currentLocation + ", no receiving apps is installed!");
+            Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps is installed!");
         }
     }
 }
