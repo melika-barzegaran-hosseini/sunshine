@@ -51,7 +51,7 @@ public class ForecastAdapter extends CursorAdapter
 
         return Utility.formatDate(cursor.getLong(dateIndex))
                 + " - " + cursor.getString(descriptionIndex)
-                + " - " + cursor.getDouble(maxTemperatureIndex)
-                + "/" + cursor.getDouble(minTemperatureIndex);
+                + " - " + Math.round(cursor.getDouble(maxTemperatureIndex))
+                + "/" + Math.round(cursor.getDouble(minTemperatureIndex));
     }
 }
