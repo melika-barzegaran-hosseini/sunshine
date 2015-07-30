@@ -21,6 +21,28 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 {
     private static final int FORECAST_LOADER_ID = 0;
 
+    private static final String[] FORECAST_COLUMNS = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.COLUMN_DESCRIPTION,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_COORD_LATITUDE,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONGITUDE
+    };
+
+    static final int COL_WEATHER_ID = 0;
+    static final int COL_WEATHER_DATE = 1;
+    static final int COL_WEATHER_DESCRIPTION = 2;
+    static final int COL_WEATHER_MAX_TEMPERATURE = 3;
+    static final int COL_WEATHER_MIN_TEMPERARURE = 4;
+    static final int COL_LOCATION_SETTING = 5;
+    static final int COL_WEATHER_CONDITION_ID = 6;
+    static final int COL_COORD_LATITUDE = 7;
+    static final int COL_COORD_LONGITUDE = 8;
+
     private ForecastAdapter forecastAdapter;
 
     public ForecastFragment(){}
@@ -103,7 +125,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         final String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
 
-        return new CursorLoader(getActivity(), URI, null, null, null, sortOrder);
+        return new CursorLoader(getActivity(), URI, FORECAST_COLUMNS, null, null, sortOrder);
     }
 
     @Override

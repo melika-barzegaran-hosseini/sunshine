@@ -34,6 +34,10 @@ public class DetailActivityFragment extends Fragment
         if(intent != null && intent.hasExtra(Intent.EXTRA_TEXT))
         {
             this.message = intent.getStringExtra(Intent.EXTRA_TEXT);
+        }
+
+        if(this.message != null)
+        {
             TextView textView = (TextView) rootView.findViewById(R.id.detail_text);
             textView.setText(this.message);
         }

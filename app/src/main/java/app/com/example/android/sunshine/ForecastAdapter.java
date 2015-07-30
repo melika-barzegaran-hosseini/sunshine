@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import app.com.example.android.sunshine.data.WeatherContract;
-
 public class ForecastAdapter extends CursorAdapter
 {
     Context context;
@@ -36,19 +34,13 @@ public class ForecastAdapter extends CursorAdapter
 
     private String convertCursorRowToUXFormat(Cursor cursor)
     {
-        int maxTemperatureIndex =
-                cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE);
-        int minTemperatureIndex =
-                cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE);
-        int dateIndex =
-                cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
-        int descriptionIndex =
-                cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DESCRIPTION);
+        double maxTemperature = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMPERATURE);
+        double minTemperature = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMPERARURE);
+        long date = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
+        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESCRIPTION);
 
 
-        return Utility.formatDate(cursor.getLong(dateIndex))
-                + " - " + cursor.getString(descriptionIndex)
-                + " - " + Math.round(cursor.getDouble(maxTemperatureIndex))
-                + "/" + Math.round(cursor.getDouble(minTemperatureIndex));
+        return Utility.formatDate(date) + " - " + description
+                + " - " + Math.round(maxTemperature) + "/" + Math.round(minTemperature);
     }
 }
