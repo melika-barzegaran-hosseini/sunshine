@@ -22,6 +22,16 @@ public class ForecastFragment extends Fragment
 
     public ForecastFragment(){}
 
+    public long getStartOfToday()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -31,7 +41,7 @@ public class ForecastFragment extends Fragment
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
         Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
                 locationSetting,
-                Calendar.getInstance().getTimeInMillis()
+                this.getStartOfToday()
         );
 
         Cursor cursor = getActivity().getContentResolver().query(
