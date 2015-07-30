@@ -4,6 +4,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,50 +15,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.Calendar;
-
 import app.com.example.android.sunshine.data.WeatherContract;
 
-public class ForecastFragment extends Fragment
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
+    private static final int FORECAST_LOADER_ID = 0;
+
     private ForecastAdapter forecastAdapter;
 
     public ForecastFragment(){}
-
-    public long getStartOfToday()
-    {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTimeInMillis();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        String locationSetting = Utility.getPreferredLocation(getActivity());
-
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-                locationSetting,
-                this.getStartOfToday()
-        );
-
-        Cursor cursor = getActivity().getContentResolver().query(
-                weatherForLocationUri,
-                null,
-                null,
-                null,
-                sortOrder
-        );
-
         //initializes the adapter.
         //adapters are the glue that allows us to bind our underlying data to our user interface
         //elements.
-        this.forecastAdapter = new ForecastAdapter(getActivity(), cursor, 0);
+        this.forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
         //inflates layout XML file and turns them into a full hierarchy.
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -107,5 +84,37 @@ public class ForecastFragment extends Fragment
         String location = Utility.getPreferredLocation(getActivity());
         String unit = Utility.getPreferredUnit(getActivity());
         new FetchWeatherTask(getActivity()).execute(location, unit);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle)
+    {
+        final String LOCATION_SETTING = Utility.getPreferredLocation(getActivity());
+        final long DATE = Utility.getStartOfToday();
+        final Uri URI = WeatherContract.WeatherEntry
+                .buildWeatherLocationWithStartDate(LOCATION_SETTING, DATE);
+
+        final String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+
+        return new CursorLoader(getActivity(), URI, null, null, null, sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
+    {
+        forecastAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader)
+    {
+        forecastAdapter.swapCursor(null);
     }
 }

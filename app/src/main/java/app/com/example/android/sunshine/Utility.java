@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Utility
@@ -27,9 +28,19 @@ public class Utility
         );
     }
 
-    static String formatDate(long dateInMilliseconds)
+    public static String formatDate(long dateInMilliseconds)
     {
         Date date = new Date(dateInMilliseconds);
         return DateFormat.getDateInstance().format(date);
+    }
+
+    public static long getStartOfToday()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
     }
 }
