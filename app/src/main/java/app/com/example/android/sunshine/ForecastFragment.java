@@ -116,13 +116,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        updateWeather();
-    }
-
     private void updateWeather()
     {
         String location = Utility.getPreferredLocation(getActivity());
@@ -160,5 +153,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoaderReset(Loader<Cursor> cursorLoader)
     {
         forecastAdapter.swapCursor(null);
+    }
+
+    void onSettingsChanged()
+    {
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
     }
 }

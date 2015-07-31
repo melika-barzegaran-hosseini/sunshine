@@ -10,13 +10,27 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity
 {
+    private static final String FORECAST_FRAGMENT_TAG = "FORECAST_FRAGMENT_TAG";
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private String location;
+    private String unit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        this.location = Utility.getPreferredLocation(this);
+        this.unit = Utility.getPreferredUnit(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null)
+        {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new ForecastFragment(), FORECAST_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     @Override
@@ -43,6 +57,30 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        String location = Utility.getPreferredLocation(this);
+        String unit = Utility.getPreferredUnit(this);
+
+        if((location != null && !location.equals(this.location)) ||
+                (unit != null && !unit.equals(this.unit)))
+        {
+            ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager()
+                    .findFragmentByTag(FORECAST_FRAGMENT_TAG);
+
+            if(forecastFragment != null)
+            {
+                forecastFragment.onSettingsChanged();
+            }
+
+            this.location = location;
+            this.unit = unit;
+        }
     }
 
     private void openPreferredLocationInMap()
