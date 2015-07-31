@@ -1,5 +1,6 @@
 package app.com.example.android.sunshine;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import app.com.example.android.sunshine.data.WeatherContract;
@@ -62,6 +64,26 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         //gets a reference to the ListView, and attach the Adapter to it.
         final ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(this.forecastAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+
+                if(cursor != null)
+                {
+                    String locationSettings = Utility.getPreferredLocation(getActivity());
+                    long date = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
+                    Uri uri = WeatherContract.WeatherEntry
+                            .buildWeatherLocationWithDate(locationSettings, date);
+
+                    Intent intent = new Intent(getActivity(), DetailActivity.class).setData(uri);
+                    startActivity(intent);
+                }
+            }
+        });
 
         return rootView;
     }

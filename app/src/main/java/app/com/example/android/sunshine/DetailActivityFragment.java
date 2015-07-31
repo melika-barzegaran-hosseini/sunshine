@@ -31,9 +31,9 @@ public class DetailActivityFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         Intent intent = getActivity().getIntent();
-        if(intent != null && intent.hasExtra(Intent.EXTRA_TEXT))
+        if(intent != null)
         {
-            this.message = intent.getStringExtra(Intent.EXTRA_TEXT);
+            this.message = intent.getDataString();
         }
 
         if(this.message != null)
