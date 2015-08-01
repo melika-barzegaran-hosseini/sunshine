@@ -55,7 +55,7 @@ public class ForecastAdapter extends CursorAdapter
         long dateValue = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         String forecastValue = cursor.getString(ForecastFragment.COL_WEATHER_DESCRIPTION);
         double highValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMPERATURE);
-        double lowValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMPERARURE);
+        double lowValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMPERATURE);
 
         viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
         viewHolder.dateView.setText(Utility.getFriendlyDate(context, dateValue));

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import app.com.example.android.sunshine.data.WeatherContract;
@@ -26,21 +27,40 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             WeatherContract.WeatherEntry.COLUMN_DESCRIPTION,
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE,
+            WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
+            WeatherContract.WeatherEntry.COLUMN_PRESSURE,
+            WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherContract.WeatherEntry.COLUMN_WIND_DIRECTION,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
     };
 
-    static final int COL_WEATHER_ID = 0;
-    static final int COL_WEATHER_DATE = 1;
-    static final int COL_WEATHER_DESCRIPTION = 2;
-    static final int COL_WEATHER_MAX_TEMPERATURE = 3;
-    static final int COL_WEATHER_MIN_TEMPERARURE = 4;
+    public static final int COL_WEATHER_ID = 0;
+    public static final int COL_WEATHER_DATE = 1;
+    public static final int COL_WEATHER_DESCRIPTION = 2;
+    public static final int COL_WEATHER_MAX_TEMPERATURE = 3;
+    public static final int COL_WEATHER_MIN_TEMPERATURE = 4;
+    public static final int COL_WEATHER_HUMIDITY = 5;
+    public static final int COL_WEATHER_PRESSURE = 6;
+    public static final int COL_WEATHER_WIND_SPEED = 7;
+    public static final int COL_WEATHER_WIND_DIRECTION = 8;
+    public static final int COL_WEATHER_CONDITION_ID = 9;
 
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     private static final int DETAILS_LOADER_ID = 0;
 
     private String forecast;
-
     private ShareActionProvider shareActionProvider;
+
+    private ImageView iconView;
+    private TextView dayView;
+    private TextView dateView;
+    private TextView descriptionView;
+    private TextView highTempView;
+    private TextView lowTempView;
+    private TextView humidityView;
+    private TextView windView;
+    private TextView pressureView;
 
     public DetailActivityFragment()
     {
@@ -51,7 +71,19 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        iconView = (ImageView) rootView.findViewById(R.id.detail_icon);
+        dateView = (TextView) rootView.findViewById(R.id.detail_date_textview);
+        dayView = (TextView) rootView.findViewById(R.id.detail_day_textview);
+        descriptionView = (TextView) rootView.findViewById(R.id.detail_forecast_textview);
+        highTempView = (TextView) rootView.findViewById(R.id.detail_high_textview);
+        lowTempView = (TextView) rootView.findViewById(R.id.detail_low_textview);
+        humidityView = (TextView) rootView.findViewById(R.id.detail_humidity_textview);
+        windView = (TextView) rootView.findViewById(R.id.detail_wind_textview);
+        pressureView = (TextView) rootView.findViewById(R.id.detail_pressure_textview);
+
+        return rootView;
     }
 
     @Override
@@ -107,27 +139,39 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
     {
-        if(!cursor.moveToFirst())
+        if(!cursor.moveToFirst() || cursor == null)
         {
             return;
         }
 
-        String date = Utility.formatDate(cursor.getLong(COL_WEATHER_DATE));
-        String description = cursor.getString(COL_WEATHER_DESCRIPTION);
-        double max = cursor.getDouble(COL_WEATHER_MAX_TEMPERATURE);
-        double min = cursor.getDouble(COL_WEATHER_MIN_TEMPERARURE);
+        int imageValue = cursor.getInt(COL_WEATHER_CONDITION_ID);
+        long dateValue = cursor.getLong(COL_WEATHER_DATE);
+        String forecastValue = cursor.getString(COL_WEATHER_DESCRIPTION);
+        double highValue = cursor.getDouble(COL_WEATHER_MAX_TEMPERATURE);
+        double lowValue = cursor.getDouble(COL_WEATHER_MIN_TEMPERATURE);
+        double humidityValue = cursor.getDouble(COL_WEATHER_HUMIDITY);
+        double windSpeedValue = cursor.getDouble(COL_WEATHER_WIND_SPEED);
+        double windDirectionValue = cursor.getDouble(COL_WEATHER_WIND_DIRECTION);
+        double pressureValue = cursor.getDouble(COL_WEATHER_PRESSURE);
 
-        this.forecast = String.format(
-                "%s - %s - %s/%s",
-                date,
-                description,
-                Utility.getFriendlyTemperature(getActivity(), max),
-                Utility.getFriendlyTemperature(getActivity(), min)
+        iconView.setImageResource(R.mipmap.ic_launcher);
+        dayView.setText(Utility.getFriendlyDayInWeek(getActivity(), dateValue));
+        dateView.setText(Utility.getFriendlyDayInMonth(getActivity(), dateValue));
+        descriptionView.setText(forecastValue);
+        highTempView.setText(Utility.getFriendlyTemperature(getActivity(), highValue));
+        lowTempView.setText(Utility.getFriendlyTemperature(getActivity(), lowValue));
+        humidityView.setText(String.format(getString(R.string.format_humidity), Math.round(humidityValue)));
+        pressureView.setText(String.format(getString(R.string.format_pressure), Math.round(pressureValue)));
+        windView.setText(
+                Utility.getFriendlyWind(getActivity(), windSpeedValue, windDirectionValue)
         );
 
-        TextView textView = (TextView) this.getView().findViewById(R.id.detail_text);
-
-        textView.setText(forecast);
+        this.forecast = String.format("%s - %s - %s/%s",
+                Utility.getFriendlyDate(getActivity(), dateValue),
+                forecastValue,
+                Utility.getFriendlyTemperature(getActivity(), highValue),
+                Utility.getFriendlyTemperature(getActivity(), lowValue)
+        );
 
         if(this.shareActionProvider != null)
         {
