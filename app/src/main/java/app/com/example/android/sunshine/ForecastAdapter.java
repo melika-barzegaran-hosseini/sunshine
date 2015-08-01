@@ -15,13 +15,9 @@ public class ForecastAdapter extends CursorAdapter
     private static final int VIEW_TYPE_FUTURE_DAY = 1;
     private static final int VIEW_TYPE_COUNT = 2;
 
-    Context context;
-
     public ForecastAdapter(Context context, Cursor cursor, int flags)
     {
         super(context, cursor, flags);
-
-        this.context = context;
     }
 
     @Override
@@ -40,22 +36,20 @@ public class ForecastAdapter extends CursorAdapter
             case VIEW_TYPE_FUTURE_DAY:
                 layoutId = R.layout.list_item_forecast;
                 break;
-
-            default:
-                break;
         }
 
-        return LayoutInflater.from(context).inflate(layoutId, parent, false);
+        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+
+        return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor)
     {
-        ImageView imageView = (ImageView) view.findViewById(R.id.list_item_icon);
-        TextView dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
-        TextView forecastView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
-        TextView highView = (TextView) view.findViewById(R.id.list_item_high_textview);
-        TextView lowView = (TextView) view.findViewById(R.id.list_item_low_textview);
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int imageValue = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         long dateValue = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
@@ -63,11 +57,11 @@ public class ForecastAdapter extends CursorAdapter
         double highValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMPERATURE);
         double lowValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMPERARURE);
 
-        imageView.setImageResource(R.mipmap.ic_launcher);
-        dateView.setText(Utility.getFriendlyDate(context, dateValue));
-        forecastView.setText(forecastValue);
-        highView.setText(Utility.getFriendlyTemperature(highValue));
-        lowView.setText(Utility.getFriendlyTemperature(lowValue));
+        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+        viewHolder.dateView.setText(Utility.getFriendlyDate(context, dateValue));
+        viewHolder.descriptionView.setText(forecastValue);
+        viewHolder.highTemperatureView.setText(Utility.getFriendlyTemperature(highValue));
+        viewHolder.lowTemperatureView.setText(Utility.getFriendlyTemperature(lowValue));
     }
 
     @Override
@@ -79,13 +73,24 @@ public class ForecastAdapter extends CursorAdapter
     @Override
     public int getItemViewType(int position)
     {
-        if(position == 0)
+        return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+    }
+
+    public static class ViewHolder
+    {
+        public final ImageView iconView;
+        public final TextView dateView;
+        public final TextView descriptionView;
+        public final TextView highTemperatureView;
+        public final TextView lowTemperatureView;
+
+        public ViewHolder(View view)
         {
-            return VIEW_TYPE_TODAY;
-        }
-        else
-        {
-            return VIEW_TYPE_FUTURE_DAY;
+            this.iconView = (ImageView) view.findViewById(R.id.list_item_icon);
+            this.dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
+            this.descriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
+            this.highTemperatureView = (TextView) view.findViewById(R.id.list_item_high_textview);
+            this.lowTemperatureView = (TextView) view.findViewById(R.id.list_item_low_textview);
         }
     }
 }
