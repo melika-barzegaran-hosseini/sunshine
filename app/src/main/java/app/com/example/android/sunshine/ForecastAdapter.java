@@ -6,6 +6,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ForecastAdapter extends CursorAdapter
 {
@@ -27,19 +29,22 @@ public class ForecastAdapter extends CursorAdapter
     @Override
     public void bindView(View view, Context context, Cursor cursor)
     {
-        //TextView textView = (TextView)view;
-        //textView.setText(convertCursorRowToUXFormat(cursor));
-    }
+        ImageView imageView = (ImageView) view.findViewById(R.id.list_item_icon);
+        TextView dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
+        TextView forecastView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
+        TextView highView = (TextView) view.findViewById(R.id.list_item_high_textview);
+        TextView lowView = (TextView) view.findViewById(R.id.list_item_low_textview);
 
-    private String convertCursorRowToUXFormat(Cursor cursor)
-    {
-        double maxTemperature = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMPERATURE);
-        double minTemperature = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMPERARURE);
-        long date = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESCRIPTION);
+        int imageValue = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        long dateValue = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
+        String forecastValue = cursor.getString(ForecastFragment.COL_WEATHER_DESCRIPTION);
+        double highValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMPERATURE);
+        double lowValue = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMPERARURE);
 
-
-        return Utility.formatDate(date) + " - " + description
-                + " - " + Math.round(maxTemperature) + "/" + Math.round(minTemperature);
+        imageView.setImageResource(R.mipmap.ic_launcher);
+        dateView.setText(Utility.getFriendlyDate(context, dateValue));
+        forecastView.setText(forecastValue);
+        highView.setText(Utility.getFriendlyTemperature(highValue));
+        lowView.setText(Utility.getFriendlyTemperature(lowValue));
     }
 }
