@@ -74,8 +74,8 @@ public class Utility
         }
     }
 
-    public static String getFriendlyTemperature(double temperature)
+    public static String getFriendlyTemperature(Context context, double temperature)
     {
-        return String.valueOf(Math.round(temperature));
+        return context.getString(R.string.format_temperature, Math.round(temperature));
     }
 }

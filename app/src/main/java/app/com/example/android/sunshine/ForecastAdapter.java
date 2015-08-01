@@ -60,8 +60,8 @@ public class ForecastAdapter extends CursorAdapter
         viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
         viewHolder.dateView.setText(Utility.getFriendlyDate(context, dateValue));
         viewHolder.descriptionView.setText(forecastValue);
-        viewHolder.highTemperatureView.setText(Utility.getFriendlyTemperature(highValue));
-        viewHolder.lowTemperatureView.setText(Utility.getFriendlyTemperature(lowValue));
+        viewHolder.highTemperatureView.setText(Utility.getFriendlyTemperature(context, highValue));
+        viewHolder.lowTemperatureView.setText(Utility.getFriendlyTemperature(context, lowValue));
     }
 
     @Override

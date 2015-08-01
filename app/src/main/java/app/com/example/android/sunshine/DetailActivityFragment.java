@@ -114,10 +114,16 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         String date = Utility.formatDate(cursor.getLong(COL_WEATHER_DATE));
         String description = cursor.getString(COL_WEATHER_DESCRIPTION);
-        int max = cursor.getInt(COL_WEATHER_MAX_TEMPERATURE);
-        int min = cursor.getInt(COL_WEATHER_MIN_TEMPERARURE);
+        double max = cursor.getDouble(COL_WEATHER_MAX_TEMPERATURE);
+        double min = cursor.getDouble(COL_WEATHER_MIN_TEMPERARURE);
 
-        this.forecast = String.format("%s - %s - %d/%d", date, description, max, min);
+        this.forecast = String.format(
+                "%s - %s - %s/%s",
+                date,
+                description,
+                Utility.getFriendlyTemperature(getActivity(), max),
+                Utility.getFriendlyTemperature(getActivity(), min)
+        );
 
         TextView textView = (TextView) this.getView().findViewById(R.id.detail_text);
 
