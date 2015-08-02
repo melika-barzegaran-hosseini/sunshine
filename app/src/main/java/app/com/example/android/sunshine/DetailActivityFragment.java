@@ -154,7 +154,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         double windDirectionValue = cursor.getDouble(COL_WEATHER_WIND_DIRECTION);
         double pressureValue = cursor.getDouble(COL_WEATHER_PRESSURE);
 
-        iconView.setImageResource(R.mipmap.ic_launcher);
+        iconView.setImageResource(Utility.getArtResourceForWeatherCondition(imageValue));
         dayView.setText(Utility.getFriendlyDayInWeek(getActivity(), dateValue));
         dateView.setText(Utility.getFriendlyDayInMonth(getActivity(), dateValue));
         descriptionView.setText(forecastValue);
