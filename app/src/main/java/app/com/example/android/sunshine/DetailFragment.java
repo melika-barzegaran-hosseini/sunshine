@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import app.com.example.android.sunshine.data.WeatherContract;
 
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
     private static final String[] DETAILS_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
@@ -45,7 +45,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public static final int COL_WEATHER_WIND_DIRECTION = 8;
     public static final int COL_WEATHER_CONDITION_ID = 9;
 
-    private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     private static final int DETAILS_LOADER_ID = 0;
 
@@ -62,7 +62,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView windView;
     private TextView pressureView;
 
-    public DetailActivityFragment()
+    public DetailFragment()
     {
         this.setHasOptionsMenu(true);
     }
@@ -119,7 +119,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     {
         Intent intent = getActivity().getIntent();
 
-        if(intent == null)
+        if(intent == null || intent.getData() == null)
         {
             return null;
         }

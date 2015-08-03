@@ -10,11 +10,12 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity
 {
-    private static final String FORECAST_FRAGMENT_TAG = "FORECAST_FRAGMENT_TAG";
+    private static final String DETAIL_FRAGMENT_TAG = "DETAIL_FRAGMENT_TAG";
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private String location;
     private String unit;
+    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,11 +26,20 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null)
+        if(findViewById(R.id.detail_container) != null)
         {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment(), FORECAST_FRAGMENT_TAG)
-                    .commit();
+            this.twoPane = true;
+
+            if (savedInstanceState == null)
+            {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_container, new DetailFragment(), DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        }
+        else
+        {
+            this.twoPane = false;
         }
     }
 
@@ -71,7 +81,7 @@ public class MainActivity extends ActionBarActivity
                 (unit != null && !unit.equals(this.unit)))
         {
             ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager()
-                    .findFragmentByTag(FORECAST_FRAGMENT_TAG);
+                    .findFragmentById(R.id.fragment_forecast);
 
             if(forecastFragment != null)
             {
