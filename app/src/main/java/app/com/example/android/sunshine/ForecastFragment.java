@@ -1,6 +1,5 @@
 package app.com.example.android.sunshine;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -79,8 +78,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                     Uri uri = WeatherContract.WeatherEntry
                             .buildWeatherLocationWithDate(locationSettings, date);
 
-                    Intent intent = new Intent(getActivity(), DetailActivity.class).setData(uri);
-                    startActivity(intent);
+                    ((Callback) getActivity())
+                            .onItemSelected(WeatherContract.WeatherEntry
+                                    .buildWeatherLocationWithDate(locationSettings, date));
                 }
             }
         });
@@ -159,5 +159,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     {
         updateWeather();
         getLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
+    }
+
+    public interface Callback
+    {
+        public void onItemSelected(Uri dateUri);
     }
 }

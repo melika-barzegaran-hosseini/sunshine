@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback
 {
     private static final String DETAIL_FRAGMENT_TAG = "DETAIL_FRAGMENT_TAG";
     private final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -88,6 +88,14 @@ public class MainActivity extends ActionBarActivity
                 forecastFragment.onSettingsChanged();
             }
 
+            DetailFragment detailFragment = (DetailFragment)getSupportFragmentManager()
+                    .findFragmentByTag(DETAIL_FRAGMENT_TAG);
+
+            if ( null != detailFragment )
+            {
+                detailFragment.onSettingsChanged();
+            }
+
             this.location = location;
             this.unit = unit;
         }
@@ -109,6 +117,28 @@ public class MainActivity extends ActionBarActivity
         else
         {
             Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps is installed!");
+        }
+    }
+
+    @Override
+    public void onItemSelected(Uri uri)
+    {
+        if(this.twoPane)
+        {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.DETAIL_URI, uri);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, fragment, DETAIL_FRAGMENT_TAG)
+                    .commit();
+        }
+        else
+        {
+            Intent intent = new Intent(this, DetailActivity.class).setData(uri);
+            startActivity(intent);
         }
     }
 }
