@@ -48,6 +48,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private ForecastAdapter forecastAdapter;
     private int position = ListView.INVALID_POSITION;
     private ListView listView;
+    private boolean useTodayLayout;
 
     public ForecastFragment(){}
 
@@ -94,6 +95,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         {
             position = savedInstanceState.getInt(POSITION);
         }
+
+        forecastAdapter.setUseTodayLayout(useTodayLayout);
 
         return rootView;
     }
@@ -185,6 +188,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     {
         updateWeather();
         getLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout)
+    {
+        this.useTodayLayout = useTodayLayout;
+        if (forecastAdapter != null)
+        {
+            forecastAdapter.setUseTodayLayout(this.useTodayLayout);
+        }
     }
 
     public interface Callback
