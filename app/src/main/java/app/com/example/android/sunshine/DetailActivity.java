@@ -24,7 +24,7 @@ public class DetailActivity extends ActionBarActivity
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_container, new DetailFragment())
+                    .add(R.id.detail_container, fragment)
                     .commit();
         }
     }
