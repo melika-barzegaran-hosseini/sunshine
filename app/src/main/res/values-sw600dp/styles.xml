@@ -4,6 +4,7 @@
 
     <style name="ForecastListStyle">
         <item name="android:choiceMode">singleChoice</item>
+        <item name="android:drawSelectorOnTop">true</item>
     </style>
 
 </resources>
