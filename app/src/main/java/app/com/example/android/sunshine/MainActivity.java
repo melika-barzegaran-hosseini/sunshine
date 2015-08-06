@@ -40,6 +40,7 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
         else
         {
             this.twoPane = false;
+            getSupportActionBar().setElevation(0f);
         }
 
         ForecastFragment forecastFragment =
