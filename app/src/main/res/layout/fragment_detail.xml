@@ -7,26 +7,32 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
             android:id="@+id/detail_day_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-condensed"/>
 
         <TextView
             android:id="@+id/detail_date_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/dark_gray"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -34,17 +40,22 @@
                 android:minHeight="?android:attr/listPreferredItemHeight"
                 android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center_vertical">
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/detail_high_textview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textSize="70sp"
+                    android:fontFamily="sans-serif-light"/>
 
                 <TextView
                     android:id="@+id/detail_low_textview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textSize="30sp"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/dark_gray"/>
 
             </LinearLayout>
 
@@ -64,7 +75,10 @@
                 <TextView
                     android:id="@+id/detail_forecast_textview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/dark_gray"/>
 
             </LinearLayout>
 
@@ -73,17 +87,24 @@
         <TextView
             android:id="@+id/detail_humidity_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"/>
 
         <TextView
             android:id="@+id/detail_wind_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"/>
 
         <TextView
             android:id="@+id/detail_pressure_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"
+            />
 
     </LinearLayout>
 
