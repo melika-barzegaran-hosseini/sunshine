@@ -1,13 +1,21 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style
+        name="AppTheme"
+        parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/sunshine_blue</item>
         <item name="colorPrimaryDark">@color/sunshine_dark_blue</item>
     </style>
 
-    <style name="forecastTheme" parent="AppTheme">
+    <style
+        name="forecastTheme"
+        parent="AppTheme">
         <item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>
+    </style>
+
+    <style
+        name="settingsTheme"
+        parent="AppTheme">
     </style>
     
     <style

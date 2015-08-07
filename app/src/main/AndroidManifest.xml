@@ -35,6 +35,7 @@
 
         <activity
             android:name=".SettingsActivity"
+            android:theme="@style/settingsTheme"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".DetailActivity">
             <meta-data
