@@ -164,6 +164,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         double pressureValue = cursor.getDouble(COL_WEATHER_PRESSURE);
 
         iconView.setImageResource(Utility.getArtResourceForWeatherCondition(imageValue));
+        iconView.setContentDescription(forecastValue);
         dayView.setText(Utility.getFriendlyDayInWeek(getActivity(), dateValue));
         dateView.setText(Utility.getFriendlyDayInMonth(getActivity(), dateValue));
         descriptionView.setText(forecastValue);

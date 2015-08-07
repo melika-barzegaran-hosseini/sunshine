@@ -75,6 +75,7 @@ public class ForecastAdapter extends CursorAdapter
         }
 
         viewHolder.iconView.setImageResource(iconResource);
+        viewHolder.iconView.setContentDescription(forecastValue);
         viewHolder.dateView.setText(Utility.getFriendlyDate(context, dateValue));
         viewHolder.descriptionView.setText(forecastValue);
         viewHolder.highTemperatureView.setText(Utility.getFriendlyTemperature(context, highValue));
