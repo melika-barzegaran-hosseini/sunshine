@@ -1,5 +1,6 @@
 package app.com.example.android.sunshine;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import app.com.example.android.sunshine.data.WeatherContract;
+import app.com.example.android.sunshine.service.SunshineService;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
@@ -144,7 +146,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     {
         String location = Utility.getPreferredLocation(getActivity());
         String unit = Utility.getPreferredUnit(getActivity());
-        new FetchWeatherTask(getActivity()).execute(location, unit);
+
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_EXTRA, location);
+        intent.putExtra(SunshineService.UNIT_EXTRA, unit);
+        getActivity().startService(intent);
     }
 
     @Override
