@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import app.com.example.android.sunshine.sync.SunshineSyncAdapter;
+
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback
 {
     private static final String DETAIL_FRAGMENT_TAG = "DETAIL_FRAGMENT_TAG";
@@ -48,6 +50,8 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
                         .findFragmentById(R.id.fragment_forecast));
 
         forecastFragment.setUseTodayLayout(!this.twoPane);
+
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
