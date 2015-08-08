@@ -16,6 +16,10 @@
 
         <service android:name=".service.SunshineService"/>
 
+        <receiver
+            android:name=".service.SunshineService$AlarmReciever"
+            android:enabled="true"/>
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/forecastTheme"

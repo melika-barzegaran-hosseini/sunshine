@@ -1,8 +1,10 @@
 package app.com.example.android.sunshine.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -96,7 +98,6 @@ public class SunshineService extends IntentService
         catch (IOException e)
         {
             Log.e(LOG_TAG, "couldn't connect to the cloud.");
-            return;
         }
         catch (JSONException e)
         {
@@ -282,5 +283,19 @@ public class SunshineService extends IntentService
         cursor.close();
 
         return locationId;
+    }
+
+    public static class AlarmReciever extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            Intent newIntent = new Intent(context, SunshineService.class);
+
+            newIntent.putExtra(LOCATION_EXTRA, intent.getStringExtra(LOCATION_EXTRA));
+            newIntent.putExtra(UNIT_EXTRA, intent.getStringExtra(UNIT_EXTRA));
+
+            context.startService(newIntent);
+        }
     }
 }
