@@ -45,4 +45,7 @@
         Pressure: <xliff:g id="pressure">%1d</xliff:g> hPa
     </string>
 
+    <string name="sync_account_type">sunshine.example.com</string>
+    <string name="content_authority">app.com.example.android.sunshine</string>
+
 </resources>

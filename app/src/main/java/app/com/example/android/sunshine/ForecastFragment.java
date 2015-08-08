@@ -1,13 +1,8 @@
 package app.com.example.android.sunshine;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,7 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import app.com.example.android.sunshine.data.WeatherContract;
-import app.com.example.android.sunshine.service.SunshineService;
+import app.com.example.android.sunshine.sync.SunshineSyncAdapter;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
@@ -148,7 +143,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateWeather()
     {
-        String location = Utility.getPreferredLocation(getActivity());
+        /*String location = Utility.getPreferredLocation(getActivity());
         String unit = Utility.getPreferredUnit(getActivity());
 
         Intent intent = new Intent(getActivity(), SunshineService.AlarmReciever.class);
@@ -163,7 +158,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + 5 * 1000,
                 alarmIntent
-        );
+        );*/
+
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     @Override
