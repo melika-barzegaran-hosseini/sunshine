@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,7 +12,6 @@ import app.com.example.android.sunshine.sync.SunshineSyncAdapter;
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback
 {
     private static final String DETAIL_FRAGMENT_TAG = "DETAIL_FRAGMENT_TAG";
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private String location;
     private String unit;
@@ -71,10 +69,6 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-
-            case R.id.action_map_location:
-                openPreferredLocationInMap();
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -109,25 +103,6 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 
             this.location = location;
             this.unit = unit;
-        }
-    }
-
-    private void openPreferredLocationInMap()
-    {
-        String location = Utility.getPreferredLocation(this);
-
-        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", location)
-                .build();
-
-        Intent intent = new Intent(Intent.ACTION_VIEW).setData(geoLocation);
-        if (intent.resolveActivity(getPackageManager()) != null)
-        {
-            startActivity(intent);
-        }
-        else
-        {
-            Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps is installed!");
         }
     }
 

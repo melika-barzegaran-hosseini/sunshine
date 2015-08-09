@@ -1,5 +1,6 @@
 package app.com.example.android.sunshine;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +25,7 @@ import app.com.example.android.sunshine.sync.SunshineSyncAdapter;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
+    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private static final int FORECAST_LOADER_ID = 0;
     private static final String POSITION = "position";
 
@@ -138,6 +141,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             case R.id.action_refresh:
                 this.updateWeather();
                 return true;
+
+
+            case R.id.action_map_location:
+                openPreferredLocationInMap();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -197,6 +205,38 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         if (forecastAdapter != null)
         {
             forecastAdapter.setUseTodayLayout(this.useTodayLayout);
+        }
+    }
+
+    private void openPreferredLocationInMap()
+    {
+        if (forecastAdapter != null)
+        {
+            Cursor cursor = forecastAdapter.getCursor();
+
+            if(cursor != null)
+            {
+                cursor.moveToFirst();
+
+                String posLat = cursor.getString(COL_COORD_LATITUDE);
+                String posLong = cursor.getString(COL_COORD_LONGITUDE);
+
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
+
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null)
+                {
+                    startActivity(intent);
+                }
+                else
+                {
+                    Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString()
+                            + ", no receiving apps installed!");
+                }
+            }
+
         }
     }
 
