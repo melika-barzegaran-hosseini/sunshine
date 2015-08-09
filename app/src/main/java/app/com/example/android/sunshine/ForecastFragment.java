@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.Calendar;
+
 import app.com.example.android.sunshine.data.WeatherContract;
 import app.com.example.android.sunshine.sync.SunshineSyncAdapter;
 
@@ -157,7 +159,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle)
     {
         final String LOCATION_SETTING = Utility.getPreferredLocation(getActivity());
-        final long DATE = Utility.getStartOfToday();
+        final long DATE = Calendar.getInstance().getTimeInMillis();
         final Uri URI = WeatherContract.WeatherEntry
                 .buildWeatherLocationWithStartDate(LOCATION_SETTING, DATE);
 

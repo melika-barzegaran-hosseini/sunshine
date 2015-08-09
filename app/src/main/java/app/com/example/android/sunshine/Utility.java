@@ -46,7 +46,13 @@ public class Utility
 
     public static long getStartOfToday()
     {
+        return getStartOfDay(Calendar.getInstance().getTimeInMillis());
+    }
+
+    public static long getStartOfDay(long date)
+    {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);

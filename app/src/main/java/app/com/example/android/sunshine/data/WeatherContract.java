@@ -7,6 +7,8 @@ import android.provider.BaseColumns;
 
 import java.util.Calendar;
 
+import app.com.example.android.sunshine.Utility;
+
 public class WeatherContract
 {
     // The "Content authority" is a name for the entire content provider, similar to the
@@ -86,13 +88,16 @@ public class WeatherContract
                 (String locationSetting, long date)
         {
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
-                    .appendQueryParameter(COLUMN_DATE, new Long(date).toString()).build();
+                    .appendQueryParameter(
+                            COLUMN_DATE,
+                            Long.toString(Utility.getStartOfDay(date))
+                    ).build();
         }
 
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date)
         {
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
-                    .appendPath(new Long(date).toString()).build();
+                    .appendPath(Long.toString(Utility.getStartOfDay(date))).build();
         }
 
         public static String getLocationSettingFromUri(Uri uri)

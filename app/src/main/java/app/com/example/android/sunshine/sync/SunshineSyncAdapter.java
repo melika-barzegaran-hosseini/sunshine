@@ -218,7 +218,9 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, counter);
-                dateTime = calendar.getTimeInMillis();
+                dateTime = Utility.getStartOfDay(
+                        Calendar.getInstance().getTimeInMillis() + counter * 24 * 60 * 60 * 1000
+                );
 
                 JSONObject dayForecast = weatherArray.getJSONObject(counter);
 
@@ -431,7 +433,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter
             String locationQuery = Utility.getPreferredLocation(getContext());
 
             Uri uri = WeatherContract.WeatherEntry
-                    .buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
+                    .buildWeatherLocationWithDate(
+                            locationQuery,
+                            Calendar.getInstance().getTimeInMillis()
+                    );
 
             Cursor cursor = getContext().getContentResolver().query(
                     uri,
