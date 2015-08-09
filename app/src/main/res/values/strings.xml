@@ -22,6 +22,15 @@
     <string name="pref_units_metric_label">Metric</string>
     <string name="pref_units_imperial_label">Imperial</string>
 
+    <string name="pref_enable_notification_key">enable_notifications</string>
+    <string name="pref_enable_notification_title">Notifications</string>
+
+    <string name="pref_enable_notifications_key">enable_notifications</string>
+    <string name="pref_enable_notifications_label">Weather Notifications</string>
+    <string name="pref_enable_notifications_true">Enabled</string>
+    <string name="pref_enable_notifications_false">Disabled</string>
+    <string name="pref_enable_notifications_default" >true</string>
+
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
 

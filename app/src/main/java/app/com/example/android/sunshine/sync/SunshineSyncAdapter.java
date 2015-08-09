@@ -15,12 +15,14 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -268,7 +270,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter
 
                 Log.d(LOG_TAG, "Update complete. " + inserted + " Inserted");
 
-                notifyWeather();
+                if(Utility.getPreferredNotificationSettings(getContext()))
+                {
+                    notifyWeather();
+                }
             }
         }
         catch (JSONException e)
@@ -453,7 +458,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter
                 double low = cursor.getDouble(INDEX_MIN_TEMP);
                 String description = cursor.getString(INDEX_SHORT_DESC);
 
-                int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
+                int smallIconId = Utility.getIconResourceForWeatherCondition(weatherId);
+                Bitmap largeIcon = BitmapFactory.decodeResource(
+                        getContext().getResources(),
+                        Utility.getArtResourceForWeatherCondition(weatherId)
+                );
                 String title = getContext().getString(R.string.app_name);
 
                 String contentText = String.format(
@@ -464,7 +473,9 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter
                 );
 
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getContext())
-                        .setSmallIcon(iconId)
+                        .setColor(getContext().getResources().getColor(R.color.sunshine_light_blue))
+                        .setLargeIcon(largeIcon)
+                        .setSmallIcon(smallIconId)
                         .setContentTitle(title)
                         .setContentText(contentText);
 
@@ -488,6 +499,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter
                 editor.putLong(lastNotificationKey, System.currentTimeMillis());
                 editor.commit();
             }
+
+            cursor.close();
         }
     }
 }

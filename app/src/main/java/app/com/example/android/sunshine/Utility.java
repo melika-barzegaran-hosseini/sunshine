@@ -38,6 +38,15 @@ public class Utility
         );
     }
 
+    public static boolean getPreferredNotificationSettings(Context context)
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(
+                context.getString(R.string.pref_enable_notification_key),
+                Boolean.parseBoolean(context.getString(R.string.pref_enable_notifications_default))
+        );
+    }
+
     public static String formatDate(long dateInMilliseconds)
     {
         Date date = new Date(dateInMilliseconds);
