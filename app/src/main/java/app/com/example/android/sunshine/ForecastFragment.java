@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.Calendar;
 
@@ -185,6 +186,27 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         if (position != ListView.INVALID_POSITION)
         {
             listView.smoothScrollToPosition(position);
+        }
+
+        updateEmptyView();
+    }
+
+    private void updateEmptyView()
+    {
+        if(this.listView.getCount() == 0)
+        {
+            TextView emptyView = (TextView)
+                    getActivity().findViewById(R.id.listview_forecast_empty);
+
+            if(emptyView != null)
+            {
+                String message = getString(R.string.no_weather_information_available);
+                if(!Utility.isNetworkAvailable(getActivity()))
+                {
+                    message = getString(R.string.no_weather_information_available_no_network);
+                }
+                emptyView.setText(message);
+            }
         }
     }
 
