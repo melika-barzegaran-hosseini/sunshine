@@ -1,29 +1,12 @@
 <resources>
 
-    <style
-        name="AppTheme"
-        parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
     </style>
 
-    <style
-        name="forecastTheme"
-        parent="AppTheme">
-        <item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>
-    </style>
-
-    <style
-        name="settingsTheme"
-        parent="AppTheme">
-    </style>
-    
-    <style
-        name="ActionBar.Solid.Sunshine.NoTitle"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="logo">@drawable/ic_logo</item>
-        <item name="displayOptions">useLogo|showHome</item>
+    <style name="SettingsTheme" parent="AppTheme">
     </style>
 
     <style name="ForecastListStyle">
