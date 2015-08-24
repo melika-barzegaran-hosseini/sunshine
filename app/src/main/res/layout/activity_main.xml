@@ -1,9 +1,19 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="app.com.example.android.sunshine.MainActivity"
-    tools:layout="@layout/fragment_main"
-
-    android:id="@+id/fragment_forecast"
-    android:name="app.com.example.android.sunshine.ForecastFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_with_logo"/>
+
+    <fragment
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="app.com.example.android.sunshine.ForecastFragment"
+        tools:layout="@layout/fragment_main"
+        android:id="@+id/fragment_forecast"
+        android:name="app.com.example.android.sunshine.ForecastFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>
